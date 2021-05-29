@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head runat="server">
+    <title>Page Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        
+        td,
+        th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+</head>
+
+<body>
+    <fieldset>
+        <legend>Demo</legend>
+        <form action="#" method="post">
+            <input type="text" id="UserID" name="UserID" readonly="readonly">
+            <input type="text" id="UserName" name="UserName" placeholder="Name">
+            <input type="text" id="UserOccupation" name="UserOccupation" placeholder="Occupation">
+            <button type="button" name="button">Add</button><br>
+        </form>
+    </fieldset>
+
+    <fieldset>
+        <legend>Sorting by</legend>
+        <select>
+            <option>ID</option>
+            <option>Name</option>
+            <option>Occupation</option>
+        </select>
+    </fieldset>
+    <fieldset>
+        <legend>Output</legend>
+        <table id="table" class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Occupation</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </fieldset>
+
+
+    <script>
+        $(document).ready(function() {
+            //Set id field to 1
+            var id = $('#UserID');
+            id.val("1");
+
+            //Add 1 to the id in textbox
+            function incID() {
+                var str = id.val();
+                var int = parseInt(str);
+                var idVal = int + 1;
+                id.val(idVal.toString());
+            }
+            //When button clicked
+            $('button').on('click', function() {
+                //create a new object
+                var obj = new Object();
+                //pass value dynamically from input box
+                obj.id = $('#UserID').val();
+                obj.name = $('#UserName').val();
+                obj.occupation = $("#UserOccupation").val();
+                //display data to the table
+                var addrow = "<tr><td class='col-id'>" + obj.id + "</td><td class='col-name'>" + obj.name + "</td><td class='col-occupation'>" + obj.occupation + "</td></tr>";
+                $("table tbody").append(addrow);
+                //Add 1 to id field
+                incID();
+            });
+
+            function sortByNumber(rows, selector, ascending) {
+                rows.sort(function(a, b) {
+                    var numberA = parseInt($(selector, a).text(), 10);
+                    var numberB = parseInt($(selector, b).text(), 10);
+                    if (ascending)
+                        return numberA - numberB;
+                    else
+                        return numberB - numberA;
+                });
+
+                return rows;
+            }
+
+            function sortByText(rows, selector, ascending) {
+                rows.sort(function(a, b) {
+                    var textA = $(selector, a).text();
+                    var textB = $(selector, b).text();
+                    if (ascending)
+                        return textA.localeCompare(textB);
+                    else
+                        return textB.localeCompare(textA);
+                });
+
+                return rows;
+            }
+
+            function sortAllBy(field) {
+                var rows = $('table tbody tr').toArray();
+
+                switch (field) {
+                    case 'ID':
+                        rows = sortByNumber(rows, 'td.col-id', true);
+                        break;
+                    case 'Name':
+                        rows = sortByText(rows, 'td.col-name', true);
+                        break;
+                    case 'Occupation':
+                        rows = sortByText(rows, 'td.col-occupation', true);
+                        break;
+                    default:
+                        console.error('Undefined sort field ' + field);
+                        break;
+                }
+
+                for (var i = 0; i < rows.length; i++) {
+                    $('table tbody').append(rows[i]);
+                }
+            }
+
+            $('select').on('change', function() {
+                sortAllBy(this.value);
+            });
+        });
+    </script>
+</body>
+
+</html>
